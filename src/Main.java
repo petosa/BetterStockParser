@@ -1,30 +1,15 @@
 /**
  * Created by Nick on 12/30/2015.
  */
-import com.jaunt.NotFound;
-import com.jaunt.ResponseException;
-
-import java.io.IOException;
-import java.util.List;
-
 public class Main {
 
     public static void main(String[] args) {
         try {
-            Symbols.update();
-            List<String> arr = Symbols.get();
+           //System.out.println(SMA.getOne("AA", "1962-10-15", 200));
+            System.out.println(SMA.getSome("AA", 200, "2015-12-29", 3));
 
-            for (String s : arr)
-            RawData.update(s);
-
-            for (String s : arr)
-            System.out.println(RawData.get(s));
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (ResponseException e) {
-            e.printStackTrace();
-        } catch (NotFound notFound) {
-            notFound.printStackTrace();
         }
     }
 

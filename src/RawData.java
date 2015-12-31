@@ -47,14 +47,50 @@ public class RawData {
         }
     }
 
-    public static List<Document> get(String symb) {
-        FindIterable<Document> cur = db.getCollection(symb).find()
+    public static List<Document> getAll(String symb) {
+        FindIterable<Document> query = db.getCollection(symb).find()
                 .sort(new Document("date", -1));
         ArrayList<Document> arr = new ArrayList<>();
-        for (Document d : cur) {
+        for (Document d : query) {
             arr.add(d);
         }
         return arr;
+    }
+
+    public static List<Document> getSome(String symb, String startDate, int previous) {
+        if (previous <= 0) {
+            throw new IllegalArgumentException("Invalid integer for days");
+        }
+        FindIterable<Document> query = db.getCollection(symb).find()
+                .sort(new Document("date", -1));
+        ArrayList<Document> arr = new ArrayList<>();
+        boolean found = false;
+        int count = 0;
+        for (Document d : query) {
+            if (d.get("date").toString().equals(startDate)) {
+                found = true;
+            }
+            if (found && count < previous) {
+                arr.add(d);
+                count++;
+            }
+        }
+        if (found == false) {
+            throw new NoSuchElementException("Raw stock data for that date does not exist");
+        }
+        if (count != previous) {
+            throw new NoSuchElementException("There are not " + previous + " days of raw data before " + startDate);
+        }
+        return arr;
+    }
+
+    public static Document getOne(String symb, String date) {
+        FindIterable<Document> query = db.getCollection(symb).find(new Document("date", date));
+        Document d = query.first();
+        if (d == null) {
+            throw new NoSuchElementException("Raw stock data for that date does not exist");
+        }
+        return d;
     }
 
     //Feed it a symbol. It finds the matching CSV and returns it as a list of BSON documents.
@@ -87,7 +123,7 @@ public class RawData {
         if (size == 0) {
             throw new NoSuchElementException("Collection does not exist");
         }
-        List<Document> l = get(symb);
+        List<Document> l = getAll(symb);
         Document doc = l.get(0);
         return doc.get("date").toString();
     }
