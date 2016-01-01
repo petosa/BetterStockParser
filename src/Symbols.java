@@ -14,6 +14,11 @@ public class Symbols {
     private static MongoClient mongoClient = new MongoClient();
     private static MongoDatabase db = mongoClient.getDatabase("symbol-db");
 
+    /**
+     * Fetches database for symbols.
+     *
+     * @return a list of all symbols saved to Mongo.
+     */
     public static List<String> get() {
         FindIterable<Document> cur = db.getCollection("symbols").find()
                 .sort(new Document("symbol", 1));
@@ -24,7 +29,9 @@ public class Symbols {
         return arr;
     }
 
-    //Update Mongo's list of option symbols
+    /**
+     * Updates Mongo's list of symbols from internet.
+     */
     public static void update() throws NotFound, ResponseException {
         db.getCollection("symbols").drop();
         db.createCollection("symbols");
@@ -37,7 +44,11 @@ public class Symbols {
         System.out.println("Updated symbols (" + db.getCollection("symbols").count() + " total)");
     }
 
-    //Pull list of weekly option symbols from CBOE site
+    /**
+     * Scrapes weekly options from CBOE site, returns them as string list.
+     *
+     * @return a list of scraped symbols.
+     */
     private static List<String> scrapeSymbols() throws ResponseException, NotFound {
         UserAgent ua = new UserAgent();
         ua.visit("https://www.cboe.com/tradtool/symbols/symbolweeklys.aspx");
