@@ -1,7 +1,7 @@
 <component name="libraryTable">
-  <library name="jaunt1.1.2">
+  <library name="jfreechart-1.0.19">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../Libraries/jaunt1.1.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../Libraries/jfreechart-1.0.19.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

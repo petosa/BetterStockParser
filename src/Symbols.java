@@ -1,4 +1,3 @@
-import com.jaunt.*;
 import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoDatabase;
@@ -38,7 +37,7 @@ public class Symbols {
     /**
      * Updates Mongo's list of symbols from internet.
      */
-    public static void update() throws NotFound, ResponseException, IOException {
+    public static void update() throws IOException {
         db.getCollection("symbols").drop();
         db.createCollection("symbols");
         List<Document> arr = scrapeSymbols();
