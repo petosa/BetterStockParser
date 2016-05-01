@@ -19,4 +19,8 @@ public class Error {
         return "The collection " + col + " does not exist.";
     }
 
+    public static String NoTimeOverlap() {
+        return "There is no overlap between these two TimeSeriesDataItem lists, intersection is impossible.";
+    }
+
 }

@@ -34,7 +34,7 @@ public class DatasetBuilder {
      */
     private static Day dateToDay(Document d) {
         if(d == null) {
-            throw new IllegalArgumentException("The document passed is was null.");
+            throw new IllegalArgumentException("The document passed in was null.");
         }
         String date = d.get("date").toString();
         String[] splitDate = date.split("-");
