@@ -59,6 +59,12 @@ public class Symbols {
         System.out.println("Updated symbols (" + db.getCollection("symbols").count() + " total)");
     }
 
+    /**
+     * Formats all symbols into a list of variable columns.
+     *
+     * @param nc the number of columns to print into.
+     * @return A String with the desired column formatting.
+     */
     public static String format(int nc) {
         final int KERNEL_WIDTH = 80;
         List<String> symbols = get();

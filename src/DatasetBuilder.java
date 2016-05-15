@@ -3,6 +3,7 @@ import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,8 +18,8 @@ public class DatasetBuilder {
      * @param doc an ArrayList of docs to package into the TimeSeries
      * @return the packaged TimeSeries
      */
-    public static TimeSeries createTimeSeries(String var, List<Document> doc) {
-        final TimeSeries t = new TimeSeries(var, Day.class);
+    public static TimeSeries createTimeSeries(String title, String var, List<Document> doc) {
+        final TimeSeries t = new TimeSeries(title, Day.class);
         for(Document d : doc) {
             t.add(dateToDay(d), Double.parseDouble(d.get(var).toString()));
         }
@@ -47,12 +48,30 @@ public class DatasetBuilder {
      * @param ts all TimeSeries to package.
      * @return A TimeSeriesCollection of provided TimeSeries.
      */
-    public static TimeSeriesCollection createDataset(TimeSeries ... ts) {
+    public static TimeSeriesCollection createDataset(List<TimeSeries> ts) {
         final TimeSeriesCollection dataset = new TimeSeriesCollection();
         for(TimeSeries tsi : ts) {
             dataset.addSeries(tsi);
         }
         return dataset;
+    }
+
+    public static TimeSeriesCollection parseBasket(Basket b) {
+        List<Tracker> trackers = b.getList();
+        List<TimeSeries> toPlot = new ArrayList<>();
+        for(Tracker t : trackers) {
+            List<Document> docs = null;
+            String symb = t.getSymbol();
+            String metric = t.getTracker();
+            if(metric.contains("sma")) {
+                int days = Integer.parseInt(metric.substring(3));
+                docs = SMA.getAll(symb, days);
+            } else {
+                docs = RawData.getAll(symb);
+            }
+            toPlot.add(DatasetBuilder.createTimeSeries(symb + "->" + metric, metric, docs));
+        }
+        return DatasetBuilder.createDataset(toPlot);
     }
 
 }

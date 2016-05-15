@@ -1,7 +1,9 @@
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
+import com.sun.javaws.exceptions.InvalidArgumentException;
 
 import java.io.IOException;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,7 +17,7 @@ public class Main {
     public static MongoDatabase db = mc.getDatabase("raw-db");
 
     public enum STATE_MACHINE {
-        MENU, SYMBOLS, BASKET, ADD, ADD_SYMBOL, VALIDATE_SYMBOL, TRACKER, FINISH_ADD, SMA, CANCEL
+        MENU, SYMBOLS, BASKET, ADD, ADD_SYMBOL, VALIDATE_SYMBOL, TRACKER, FINISH_ADD, SMA, CANCEL, PLOT
     }
 
     public static STATE_MACHINE state = STATE_MACHINE.MENU;
@@ -37,12 +39,13 @@ public class Main {
                 case MENU:
                     cmd = "";
                     in = new Scanner(System.in);
-                    frame("Menu:\n[1] Symbols\n[2] Basket\n[3] Add");
+                    frame("Menu:\n[1] Symbols\n[2] Basket\n[3] Add\n[4] Remove\n[5] Plot");
                     System.out.print("\n>");
                     cmd = in.nextLine();
                     if (cmd.equals("1")) state = STATE_MACHINE.SYMBOLS;
                     if (cmd.equals("2")) state = STATE_MACHINE.BASKET;
                     if (cmd.equals("3")) state = STATE_MACHINE.ADD;
+                    if (cmd.equals("5")) state = STATE_MACHINE.PLOT;
                     break;
                 case CANCEL:
                     System.out.println("\nOperation canceled.\n");
@@ -136,11 +139,25 @@ public class Main {
                     System.out.println();
                     state = STATE_MACHINE.FINISH_ADD;
                     break;
+                case PLOT:
+                    LineChart chart = new LineChart(b.toString(), DatasetBuilder.parseBasket(b));
+                    chart.pack();
+                    chart.setVisible(true);
+                    state = STATE_MACHINE.MENU;
+                    break;
             }
         }
     }
 
+    /**
+     * Prints a String within a decorative frame.
+     *
+     * @param q the String to print in a frame
+     * @throws InvalidArgumentException if the specified symbol does not exist.
+     */
     private static void frame(String q) {
+        if(q == null)
+            throw new IllegalArgumentException(Error.ArgInvalid());
         String[] a = q.split("\n");
         int l = 0;
         for (String s : a)

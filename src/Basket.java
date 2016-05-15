@@ -1,3 +1,5 @@
+import com.sun.javaws.exceptions.InvalidArgumentException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,8 +16,12 @@ public class Basket {
 
     public void add(Tracker t){
         if(t == null)
-            throw new NullPointerException("That Tracker is null.");
+            throw new IllegalArgumentException(Error.ArgInvalid());
         basket.add(t);
+    }
+
+    public List<Tracker> getList() {
+        return basket;
     }
 
     public String toString() {
