@@ -9,11 +9,11 @@ public class LineChart extends JFrame {
 
     private static final long serialVersionUID = 1L;
 
-    public LineChart(TimeSeriesCollection tsc) {
+    public LineChart(String label, TimeSeriesCollection tsc) {
         super("BetterStockParser");
 
         // based on the dataset we create the chart
-        JFreeChart c = ChartFactory.createTimeSeriesChart("Stock Line Graph", "Date", "Price", tsc, true, true, false);
+        JFreeChart c = ChartFactory.createTimeSeriesChart(label, "Date", "Price", tsc, true, true, false);
 
         // Adding chart into a chart panel
         ChartPanel chartPanel = new ChartPanel(c);

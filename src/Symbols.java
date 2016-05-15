@@ -35,6 +35,16 @@ public class Symbols {
     }
 
     /**
+     * Tests whether a symbol exists in the database.
+     *
+     * @param s symbol to test for.
+     * @return boolean whether symbol exists.
+     */
+    public static boolean symbolExists(String s) {
+        return get().contains(s.toUpperCase());
+    }
+
+    /**
      * Updates Mongo's list of symbols from internet.
      */
     public static void update() throws IOException {
@@ -47,6 +57,28 @@ public class Symbols {
         }
         db.getCollection("symbols").insertMany(docs);
         System.out.println("Updated symbols (" + db.getCollection("symbols").count() + " total)");
+    }
+
+    public static String format(int nc) {
+        final int KERNEL_WIDTH = 80;
+        List<String> symbols = get();
+        String ret = "";
+        int num = symbols.size();
+        int perCol = num / nc;
+        String curr = "";
+        for(int i = 0; i < perCol; i++) {
+            try {
+                for(int j = 0; j < nc; j++) {
+                    curr = symbols.get(i + perCol*j);
+                    ret += curr;
+                    for(int k = 0; k < KERNEL_WIDTH/nc - curr.length(); k++)
+                        ret += " ";
+                }
+            } catch (IndexOutOfBoundsException e) {
+            }
+            ret += "\n";
+        }
+        return ret;
     }
 
     /**

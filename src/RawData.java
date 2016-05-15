@@ -17,9 +17,6 @@ import java.util.NoSuchElementException;
  */
 public class RawData {
 
-    private static MongoClient mongoClient = new MongoClient();
-    private static MongoDatabase db = mongoClient.getDatabase("raw-db");
-
     /**
      * Syncs raw data in Mongo to current data, downloaded from Yahoo CSVs.
      *
@@ -43,12 +40,12 @@ public class RawData {
             date = getLastDate(symb);
         } catch (NoSuchElementException e) {}
         if (date == null) {
-            db.getCollection(symb).insertMany(arr);
+            Main.db.getCollection(symb).insertMany(arr);
             System.out.println("Fresh! - " + symb);
         } else if (!arr.get(0).get("date").toString().equals(date)) {
             int index = 0;
             while (!arr.get(index).get("date").toString().equals(date)) {
-                db.getCollection(symb).insertOne(arr.get(index));
+                Main.db.getCollection(symb).insertOne(arr.get(index));
                 index++;
             }
             System.out.println("Updated! (" + index + " documents added) - " + symb);
@@ -68,7 +65,7 @@ public class RawData {
      * @return one document for this symbol.
      */
     public static Document getOne(String symb, String date) {
-        FindIterable<Document> query = db.getCollection(symb).find(new Document("date", date));
+        FindIterable<Document> query = Main.db.getCollection(symb).find(new Document("date", date));
         Document d = query.first();
         if (d == null) {
             throw new NoSuchElementException(Error.NoMatchingRecord(date));
@@ -93,7 +90,7 @@ public class RawData {
         if (previous <= 0) {
             throw new IllegalArgumentException(Error.ArgInvalid());
         }
-        FindIterable<Document> query = db.getCollection(symb).find()
+        FindIterable<Document> query = Main.db.getCollection(symb).find()
                 .sort(new Document("date", -1));
         ArrayList<Document> arr = new ArrayList<>();
         boolean found = false;
@@ -123,7 +120,7 @@ public class RawData {
      * @return a list of all documents for this symbol.
      */
     public static List<Document> getAll(String symb) {
-        FindIterable<Document> query = db.getCollection(symb).find()
+        FindIterable<Document> query = Main.db.getCollection(symb).find()
                 .sort(new Document("date", -1));
         ArrayList<Document> arr = new ArrayList<>();
         for (Document d : query) {
@@ -168,7 +165,7 @@ public class RawData {
      * @return the date.
      */
     private static String getLastDate(String symb) {
-        long size = db.getCollection(symb).count();
+        long size = Main.db.getCollection(symb).count();
         if (size == 0) {
             throw new NoSuchElementException(Error.CollectionDNE(symb));
         }
